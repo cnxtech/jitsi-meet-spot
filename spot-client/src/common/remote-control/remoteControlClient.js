@@ -62,8 +62,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @returns {Promise} Resolves if the command has been acknowledged.
      */
     adjustVolume(direction) {
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(), COMMANDS.ADJUST_VOLUME, { direction });
+        return this._sendCommand(COMMANDS.ADJUST_VOLUME, { direction });
     }
 
     /**
@@ -187,8 +186,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
 
         this._goToMeetingPromise
             = preGoToMeeting
-                .then(() => this.xmppConnection.sendCommand(
-                        this._getSpotId(),
+                .then(() => this._sendCommand(
                         COMMANDS.GO_TO_MEETING,
                         {
                             startWithScreensharing: startWithScreensharing === 'wired',
@@ -217,8 +215,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
     hangUp(skipFeedback = false) {
         this.destroyWirelessScreenshareConnections();
 
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(),
+        return this._sendCommand(
             COMMANDS.HANG_UP,
             {
                 skipFeedback
@@ -233,8 +230,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @returns {Promise} Resolves if the command has been acknowledged.
      */
     setAudioMute(mute) {
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(), COMMANDS.SET_AUDIO_MUTE, { mute });
+        return this._sendCommand(COMMANDS.SET_AUDIO_MUTE, { mute });
     }
 
     /**
@@ -247,8 +243,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @returns {Promise} Resolves if the command has been acknowledged.
      */
     setScreensharing(screensharing) {
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(),
+        return this._sendCommand(
             COMMANDS.SET_SCREENSHARING,
             { on: screensharing }
         );
@@ -262,11 +257,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @returns {Promise} Resolves if the command has been acknowledged.
      */
     setTileView(tileView) {
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(),
-            COMMANDS.SET_TILE_VIEW,
-            { tileView }
-        );
+        return this._sendCommand(COMMANDS.SET_TILE_VIEW, { tileView });
     }
 
     /**
@@ -277,8 +268,18 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @returns {Promise} Resolves if the command has been acknowledged.
      */
     setVideoMute(mute) {
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(), COMMANDS.SET_VIDEO_MUTE, { mute });
+        return this._sendCommand(COMMANDS.SET_VIDEO_MUTE, { mute });
+    }
+
+    /**
+     * FIXME.
+     *
+     * @param {string} command - FIXME.
+     * @param {Object} data - FIXME.
+     * @returns {Promise<Object>}
+     */
+    _sendCommand(command, data){
+        return this.xmppConnection.sendCommand(this._getSpotId(), command, data);
     }
 
     /**
@@ -341,8 +342,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @returns {Promise} Resolves if the command has been acknowledged.
      */
     submitFeedback(feedback) {
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(), COMMANDS.SUBMIT_FEEDBACK, feedback);
+        return this._sendCommand(COMMANDS.SUBMIT_FEEDBACK, feedback);
     }
 
     /**
@@ -353,8 +353,7 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @returns {Promise} Resolves if the command has been acknowledged.
      */
     submitPassword(password) {
-        return this.xmppConnection.sendCommand(
-            this._getSpotId(), COMMANDS.SUBMIT_PASSWORD, password);
+        return this._sendCommand(COMMANDS.SUBMIT_PASSWORD, password);
     }
 
     /**
