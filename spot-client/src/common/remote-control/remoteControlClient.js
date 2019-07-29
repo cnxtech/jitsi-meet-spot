@@ -278,7 +278,11 @@ export class RemoteControlClient extends BaseRemoteControlService {
      * @param {Object} data - FIXME.
      * @returns {Promise<Object>}
      */
-    _sendCommand(command, data){
+    _sendCommand(command, data) {
+        if (this._p2pSignaling.isReady()) {
+            return this._p2pSignaling.sendCommand(command, data);
+        }
+
         return this.xmppConnection.sendCommand(this._getSpotId(), command, data);
     }
 
@@ -473,6 +477,13 @@ export class RemoteControlClient extends BaseRemoteControlService {
             this._waitForSpotTvTimeout = null;
         }
 
+        if (!this._p2pSignaling) {
+            this._createP2PSignalingConnection(false);
+
+            // Client initiates the P2P signaling session
+            this._p2pSignaling.start(this._getSpotId());
+        }
+
         this.emit(
             SERVICE_UPDATES.SERVER_STATE_CHANGE,
             {
@@ -496,6 +507,9 @@ export class RemoteControlClient extends BaseRemoteControlService {
                     data,
                     from
                 });
+            break;
+        default:
+            super._processMessage(messageType, from, data);
             break;
         }
     }

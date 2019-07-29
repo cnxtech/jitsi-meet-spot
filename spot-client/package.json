@@ -47,7 +47,7 @@
         "js-utils": "github:jitsi/js-utils#4bab5934ff261d5b9c8593e11a2a169e54ffddee",
         "jsdoc": "3.6.2",
         "jwt-decode": "2.2.0",
-        "lib-jitsi-meet": "github:jitsi/lib-jitsi-meet#a909e594868b17f0c72c85f2a231384f4cb1ea61",
+        "lib-jitsi-meet": "github:jitsi/lib-jitsi-meet#5e2ffc8a4cf4f708bf9b87eea32c3e483684bf6a",
         "lib-quiet-js": "github:virtuacoplenny/quiet-js#lenny/rewrite",
         "lodash.bindall": "4.4.0",
         "lodash.debounce": "4.0.8",

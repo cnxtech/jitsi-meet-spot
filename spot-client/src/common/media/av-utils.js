@@ -35,6 +35,15 @@ export default {
     },
 
     /**
+     * FIXME.
+     *
+     * @returns {void}
+     */
+    initialize() {
+        this._initializeWebRTC();
+    },
+
+    /**
      * Creates a new {@code JitsiLocalTrack} for a desktop stream with the
      * provided media configuration.
      *

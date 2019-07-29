@@ -274,6 +274,22 @@ export class RemoteControlServer extends BaseRemoteControlService {
         this._notifySpotRemoteMessageReceived(commandType, data);
     }
 
+    /**
+     * FIXME.
+     *
+     * @param {string} remoteAddress - FIXME.
+     * @param {number} requestId - FIXME.
+     * @param {string} command - FIXME.
+     * @param {Object} data - FIXME.
+     * @protected
+     * @returns {void}
+     */
+    _onP2PSignalingMessageReceived({ remoteAddress, requestId, command, data }) {
+        this._notifySpotRemoteMessageReceived(command, data);
+
+        this._p2pSignaling && this._p2pSignaling.sendCommandAck(remoteAddress, requestId);
+    }
+
 
     /**
      * Callback invoked when the XMPP connection is disconnected.
@@ -339,6 +355,9 @@ export class RemoteControlServer extends BaseRemoteControlService {
                 }
             );
 
+            break;
+        default:
+            super._processMessage(messageType, from, data);
             break;
         }
     }

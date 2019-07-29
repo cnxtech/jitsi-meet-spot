@@ -3,10 +3,12 @@ import { logger } from 'common/logger';
 import { getJitterDelay } from 'common/utils';
 
 import {
-    CONNECTION_EVENTS,
+    CONNECTION_EVENTS, MESSAGES,
     SERVICE_UPDATES
 } from './constants';
 import XmppConnection from './xmpp-connection';
+import P2PSignalingClient from './P2PSignalingClient';
+import P2PSignalingServer from './P2PSignalingServer';
 
 /**
  * The interface for interacting with the XMPP service which powers the
@@ -33,6 +35,14 @@ export class BaseRemoteControlService extends Emitter {
                     .catch(() => { /* swallow unload errors from bubbling up */ });
             }
         );
+
+        /**
+         * FIXME.
+         *
+         * @type {P2PSignalingClient|P2PSignalingServer|null}
+         * @protected
+         */
+        this._p2pSignaling = null;
     }
 
     /**
@@ -351,11 +361,103 @@ export class BaseRemoteControlService extends Emitter {
      * the message.
      * @param {string} from - The JID of the participant sending the message.
      * @param {Object} data - Additional information attached to the message.
+     * @protected
+     * @returns {void}
+     */
+    _processMessage(messageType, from, data) {
+        if (messageType === MESSAGES.REMOTE_CONTROL_P2P) {
+            this._processRemoteControlP2PMessage({
+                from,
+                data
+            });
+        }
+    }
+
+    /**
+     * FIXME.
+     *
+     * @param {number} requestId - FIXME.
+     * @param {string} command - FIXME.
+     * @param {Object} data - FIXME.
+     * @protected
+     * @returns {void}
+     */
+    _onP2PSignalingMessageReceived() {
+        return;
+    }
+
+    /**
+     * FIXME.
+     *
+     * @param {boolean} isServer - FIXME.
+     * @protected
+     * @returns {void}
+     */
+    _createP2PSignalingConnection(isServer) {
+        // FIXME mess
+        if (isServer) {
+            this._p2pSignaling = new P2PSignalingServer(
+                this.xmppConnection.getJitsiConnection(), {
+                    onReadyStateChanged: isReady => {
+                        logger.log(`P2P signalling ${(isReady ? 'ready' : 'closed')}`);
+
+                        // FIXME this callback can be removed for now
+                    },
+                    onSendP2PMessage: (to, data) => {
+                        this.xmppConnection.sendMessage(
+                            to,
+                            MESSAGES.REMOTE_CONTROL_P2P,
+                            data
+                        ).catch(error => logger.error('Failed to send p2p message', { error }));
+                    },
+                    onSignalingMessageReceived: data => {
+                        this._onP2PSignalingMessageReceived(data);
+                    }
+                });
+        } else {
+            this._p2pSignaling = new P2PSignalingClient(
+                this.xmppConnection.getJitsiConnection(), {
+                    onReadyStateChanged: isReady => {
+                        logger.log(`P2P signalling ${(isReady ? 'ready' : 'closed')}`);
+
+                        // FIXME this callback can be removed for now
+                    },
+                    onSendP2PMessage: (to, data) => {
+                        this.xmppConnection.sendMessage(
+                            to,
+                            MESSAGES.REMOTE_CONTROL_P2P,
+                            data
+                        ).catch(error => logger.error('Failed to send p2p message', { error }));
+                    },
+                    onSignalingMessageReceived: data => {
+                        this._onP2PSignalingMessageReceived(data);
+                    }
+                });
+        }
+    }
+
+    /**
+     * FIXME.
+     *
+     * @param {string} from - FIXME.
+     * @param {string} data - FIXME.
      * @private
      * @returns {void}
      */
-    _processMessage() {
-        return;
+    _processRemoteControlP2PMessage({ from, data }) {
+        // FIXME move to server class
+        if (!this._p2pSignaling) {
+            this._createP2PSignalingConnection(true);
+        }
+
+        if (this._p2pSignaling) {
+            this._p2pSignaling.processMessage({
+                data,
+                from
+            });
+        } else {
+            logger.error('Ignoring P2P message - no connection', { from });
+        }
     }
 
     /**
