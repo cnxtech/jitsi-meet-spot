@@ -103,7 +103,7 @@ describe('SpotBackendService', () => {
                 spotBackendService.register(MOCK_PAIRING_CODE).then(() => {
                     expect(spotBackendService.isPairingPermanent()).toBe(true);
 
-                    fetch.mockResponseOnce(null,
+                    fetch.mockResponse('',
                         {
                             status: 401,
                             ok: false
@@ -167,6 +167,7 @@ describe('SpotBackendService', () => {
                     })
             );
         });
+
         describe('tries to refresh the access token if backend returns 401', () => {
             const MOCK_REGISTRATION = {
                 ...MOCK_RESPONSE,
@@ -182,22 +183,31 @@ describe('SpotBackendService', () => {
                 fetch.resetMocks();
             });
 
-            it('refresh the token if get room info on expired', () => {
+            fit('refresh the token if get room info on expired', () => {
                 return spotBackendService.register(MOCK_PAIRING_CODE)
                     .then(() => {
-                        fetch.once(
-                            [ null, {
-                                status: 401,
-                                ok: false
-                            } ])
-                            .once(JSON.stringify({
-                                id: '123',
-                                mucUrl: 'url',
-                                name: 'name'
-                            }));
+                        //Mock the initial request to get room info
+                        fetch.once('', {
+                            status: 401,
+                            ok: false
+                        });
+
+                        // Mock the refreshing of the token
+                        fetch.once(JSON.stringify(MOCK_RESPONSE));
+
+                        // Mock the request to get room info
+                        fetch.once(JSON.stringify({
+                            id: 'mock-id',
+                            mucUrl: 'muc-url',
+                            name: 'mock-muc-name'
+                        }));
 
                         return spotBackendService.getRoomInfo().then(roomInfo => {
-                            expect(roomInfo).toEqual({});
+                            expect(roomInfo).toEqual({
+                                id: 'mock-id',
+                                name: 'mock-muc-name',
+                                roomName: 'muc-url'
+                            });
                         });
                     });
             });
