@@ -167,5 +167,40 @@ describe('SpotBackendService', () => {
                     })
             );
         });
+        describe('tries to refresh the access token if backend returns 401', () => {
+            const MOCK_REGISTRATION = {
+                ...MOCK_RESPONSE,
+                pairingCode: MOCK_PAIRING_CODE,
+                expiresIn: undefined,
+                expires: MOCK_RESPONSE.emitted + MOCK_RESPONSE.expiresIn
+            };
+
+            beforeEach(() => {
+                jest.useFakeTimers();
+                jest.spyOn(persistence, 'get')
+                    .mockReturnValue(MOCK_REGISTRATION);
+                fetch.resetMocks();
+            });
+
+            it('refresh the token if get room info on expired', () => {
+                return spotBackendService.register(MOCK_PAIRING_CODE)
+                    .then(() => {
+                        fetch.once(
+                            [ null, {
+                                status: 401,
+                                ok: false
+                            } ])
+                            .once(JSON.stringify({
+                                id: '123',
+                                mucUrl: 'url',
+                                name: 'name'
+                            }));
+
+                        return spotBackendService.getRoomInfo().then(roomInfo => {
+                            expect(roomInfo).toEqual({});
+                        });
+                    });
+            });
+        });
     });
 });
