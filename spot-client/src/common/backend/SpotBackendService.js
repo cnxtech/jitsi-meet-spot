@@ -83,8 +83,12 @@ export class SpotBackendService extends Emitter {
      * @returns {Promise<RoomInfo>}
      */
     getRoomInfo() {
-        return this._wrapJwtBackendRequest(
-            fetchRoomInfo.bind(this, this.roomKeeperServiceUrl, this.getJwt()))
+        const requestCreator = () => fetchRoomInfo(
+            this.roomKeeperServiceUrl,
+            this.getJwt()
+        );
+
+        return this._wrapJwtBackendRequest(requestCreator)
             .then(({ id, mucUrl, name }) => {
                 return {
                     id,
