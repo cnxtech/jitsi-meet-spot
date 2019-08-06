@@ -183,10 +183,10 @@ describe('SpotBackendService', () => {
                 fetch.resetMocks();
             });
 
-            fit('refresh the token if get room info on expired', () => {
-                return spotBackendService.register(MOCK_PAIRING_CODE)
+            it('refresh the token if get room info on expired', () =>
+                spotBackendService.register(MOCK_PAIRING_CODE)
                     .then(() => {
-                        //Mock the initial request to get room info
+                        // Mock the initial request to get room info
                         fetch.once('', {
                             status: 401,
                             ok: false
@@ -209,8 +209,7 @@ describe('SpotBackendService', () => {
                                 roomName: 'muc-url'
                             });
                         });
-                    });
-            });
+                    }));
         });
     });
 });

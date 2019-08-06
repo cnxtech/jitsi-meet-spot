@@ -276,10 +276,15 @@ export class SpotBackendService extends Emitter {
     }
 
     /**
+     * Executes a request and will retry one time with a renewed auth token.
+     * Used for automatically renewing authorization or retrying on random
+     * backend unauthorized errors.
      *
-     * @param {Function<Promise>} requestCreator - FIXME.
-     * @returns {Promise<never>}
+     * @param {Function<Promise>} requestCreator - A function to invoke which
+     * makes a request to the backend using a jwt.
      * @private
+     * @returns {Promise} Resolves when the backend request has succeeded
+     * initially or after a retry on failed authorization.
      */
     _wrapJwtBackendRequest(requestCreator) {
         let promiseChain = Promise.resolve();
