@@ -27,7 +27,7 @@
         "@react-native-community/async-storage": "1.4.2",
         "jitsi-meet-logger": "github:jitsi/jitsi-meet-logger#5da3033d647054457597920252b3387fa43a17fa",
         "jitsi-meet-redux": "github:jitsi/jitsi-meet-redux#bdc108e3857d5649bea16ffbf60e5a367c820b5c",
-        "lodash": "4.17.11",
+        "lodash": "4.17.21",
         "react-native-beacons-manager": "github:jitsi/react-native-beacons-manager#86847b7de89dc3c1142d68b1ce24c9ff32d734e0",
         "react-native-keep-awake": "4.0.0",
         "react-native-push-notification": "github:zo0r/react-native-push-notification#4e53d8cbbf5fe0f623b3ca6b58e0ef097834b48b",
